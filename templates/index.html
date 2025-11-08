@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de Contraseñas</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .strength-bar {
+            height: 10px;
+            width: 100%;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .strength-bar div {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .weak { background-color: #e74c3c; }
+        .medium { background-color: #f1c40f; }
+        .strong { background-color: #2ecc71; }
+        .message {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Validador de Contraseñas</h2>
+        <form method="post">
+            <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+            <div class="strength-bar"><div id="strength"></div></div>
+            <div class="message" id="message"></div>
+            <input type="submit" value="Validar">
+        </form>
+        {% if result %}
+            <div class="message {% if '✅' in result %}strong{% else %}weak{% endif %}">
+                {{ result }}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const strengthBar = document.getElementById('strength');
+        const message = document.getElementById('message');
+
+        passwordInput.addEventListener('input', () => {
+            const password = passwordInput.value;
+            let strength = 0;
+
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+
+            let width = (strength / 5) * 100;
+            strengthBar.style.width = width + '%';
+
+            if (strength <= 2) {
+                strengthBar.className = 'weak';
+                message.textContent = 'Contraseña débil';
+                message.style.color = '#e74c3c';
+            } else if (strength === 3 || strength === 4) {
+                strengthBar.className = 'medium';
+                message.textContent = 'Contraseña aceptable';
+                message.style.color = '#f1c40f';
+            } else {
+                strengthBar.className = 'strong';
+                message.textContent = 'Contraseña fuerte';
+                message.style.color = '#2ecc71';
+            }
+        });
+    </script>
+</body>
+</html>
